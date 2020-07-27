@@ -40,8 +40,12 @@ def get_all_closed_issues():
 
 # -- SETUP --
 labels = get_labels()
-open_issues = get_all_open_issues()
-closed_issues = get_all_closed_issues()
+
+with st.spinner('Getting streams lit...'):
+    open_issues = get_all_open_issues()
+with st.spinner('Reticulating splines...'):
+    closed_issues = get_all_closed_issues()
+
 all_issues = open_issues + closed_issues 
 
 
