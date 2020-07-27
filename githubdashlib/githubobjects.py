@@ -26,6 +26,7 @@ class Label:
         return "<Label {l.name}: {l.color}>".format(l = self)
 
 
+
 class Issue:
     def __init__(self, **kwargs):
         self.state = kwargs.get("state", None)
@@ -46,10 +47,11 @@ class Issue:
         self.closed_at = kwargs.get("closed_at", None)
         self._process_datetimes()
 
-        self.labels = []
+        self.labels = {}
         labels = kwargs.get("labels", [])
         for item in labels:
-            self.labels.append(Label(**item))
+            label = Label(**item)
+            self.labels[label.name] = label
 
         self.repository_url = kwargs.get("repository_url", None)
         self.labels_url = kwargs.get("labels_url", None)
@@ -61,10 +63,13 @@ class Issue:
         # '2020-07-23T05:47:47Z'
         if self.created_at:
             self.created_at = datetime.strptime(self.created_at, "%Y-%m-%dT%H:%M:%SZ")
+            #self.created_at = self.created_at.replace(tzinfo=None)
         if self.updated_at:  
             self.updated_at = datetime.strptime(self.updated_at, "%Y-%m-%dT%H:%M:%SZ")
+            #self.updated_at = self.updated_at.replace(tzinfo=None)
         if self.closed_at:
             self.closed_at = datetime.strptime(self.closed_at, "%Y-%m-%dT%H:%M:%SZ")
+            #self.closed_at = self.closed_at.replace(tzinfo=None)
 
     @property
     def time_to_close(self):
