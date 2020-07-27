@@ -22,20 +22,23 @@ MAXPAGE = 5
 def get_connection():
     return Connection(TOKEN)
 
+CONN = get_connection()
 
-@st.cache
-def get_labels(conn):
-    return _get_labels(conn, per_page=100)
+@st.cache(allow_output_mutation=True)
+def get_labels():
+    return _get_labels(CONN, per_page=100)
 
 
-def get_issues(conn, params, per_page=30, page=1):
-    return _get_issues(conn, params, per_page=per_page, page=page)
+def get_issues(params, per_page=30, page=1):
+    return _get_issues(CONN, params, per_page=per_page, page=page)
 
 
 # -- SETUP --
-conn = get_connection()
+
+_all_labels = get_labels()
+
 ALL_LABELS = {}
-for label in get_labels(conn):
+for label in _all_labels:
     ALL_LABELS[label.name] = label 
 
 
@@ -46,7 +49,10 @@ st.sidebar.header("Filter by Labels")
 label_checkboxes = dict(zip(ALL_LABELS.keys(), [False] * len(ALL_LABELS))) 
 
 for name in ALL_LABELS.keys():
-    label_checkboxes[name] = st.sidebar.checkbox(label=name)
+    try:
+        label_checkboxes[name] = st.sidebar.checkbox(label=name)
+    except TypeError:
+        pass
 
 selected_labels = [name for name in label_checkboxes.keys() if label_checkboxes[name]]
 
@@ -58,7 +64,7 @@ current_page = st.number_input(label="Page", min_value=1)
 
 params = {"state": state,
           "labels": ",".join(selected_labels)}
-issues = get_issues(conn, params, per_page=issues_per_page, page=current_page)
+issues = get_issues(params, per_page=issues_per_page, page=current_page)
 
 if selected_labels:
     label_str = " ".join([ALL_LABELS[label].html_name for label in selected_labels])
@@ -68,7 +74,7 @@ else:
 
 for issue in issues:
     issue_line = "<a href='{i.html_url}'>{i}</a>".format(i=issue)
-    for label in issue.labels:
+    for label in issue.labels.values():
         if label.name not in selected_labels:
             issue_line += " " + label.html_name
     st.write(issue_line, unsafe_allow_html=True)
