@@ -42,9 +42,7 @@ def get_all_closed_issues():
 labels = get_labels()
 open_issues = get_all_open_issues()
 closed_issues = get_all_closed_issues()
-issues = open_issues + closed_issues 
-
-issdf = make_issue_dataframe(issues)
+all_issues = open_issues + closed_issues 
 
 
 # -- SIDEBAR --
@@ -61,27 +59,35 @@ option = st.sidebar.selectbox(
         ))
 
 st.sidebar.header("Basic stats")
-st.sidebar.markdown("* Total issues: %i" % len(issues))
+st.sidebar.markdown("* Total issues: %i" % len(all_issues))
 st.sidebar.markdown("* Open issues: %i" % len(open_issues))
 st.sidebar.markdown("* Closed issues: %i" % len(closed_issues))
 
 
 # -- MAIN --
 if option == "Issue breakdown by major label":
-    st.write(issdf)
+    state = st.sidebar.radio("Issue state", ("open", "closed", "all"))
+
+    if state=="open":
+        issdf = make_issue_dataframe(open_issues)
+    elif state=="closed":
+        issdf = make_issue_dataframe(closed_issues)
+    else:
+        issdf = make_issue_dataframe(all_issues)
 
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
-    labels = "enhancement", "bug", "docs", "bughancement", "PR or ??"
+    labels = "enhancement", "bughancement", "bug", "docs", "infra", "PR or unknown"
 
     #sizes = [15, 30, 45, 10]
     sizes = (issdf["is_enhancement"].sum(), 
+            issdf["is_both"].sum(),
             issdf["is_bug"].sum(),
             issdf["is_docs"].sum(),
-            issdf["is_both"].sum(),
+            issdf["is_infra"].sum(),
             issdf["is_neither"].sum(),
             )
-    #explode = (0, .1, 0, 0)  # only "explode" the 4th slice
-    explode = (0, 0, 0, 0.1, 0)
+    st.write(sizes)
+    explode = (0, 0, 0, 0, 0, 0.1)
 
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
@@ -90,6 +96,7 @@ if option == "Issue breakdown by major label":
 
     st.pyplot()
 
+    st.write(issdf)
 
 # ---
 if option == "Issue breakdown by project category":
