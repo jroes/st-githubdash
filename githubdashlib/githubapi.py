@@ -1,7 +1,17 @@
-from .githubobjects import Label, Issue
+from .githubobjects import Label, Issue, Event
 
 ISSUES_URI = "/repos/streamlit/streamlit/issues"
 LABELS_URI = "/repos/streamlit/streamlit/labels"
+EVENTS_URI = "/repos/streamlit/streamlit/events"
+
+
+def get_all_events(conn):
+    events = []
+    uri = EVENTS_URI
+    response = conn.send("GET", uri)
+    for item in response.parsed:
+        events.append(Event(**item))
+    return events
 
 
 def get_labels(conn, per_page=30):

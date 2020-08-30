@@ -1,6 +1,11 @@
 from datetime import datetime
 
 
+class Event:
+    def __init__(self, **kwargs):
+        self.__dict__ = kwargs
+
+
 class Label:
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
