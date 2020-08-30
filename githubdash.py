@@ -9,11 +9,10 @@ from octohub.connection import Connection
 from githubdashlib import Label, Issue 
 from githubdashlib import get_labels as _get_labels
 from githubdashlib import get_issues as _get_issues
+from githubdashlib import get_all_events as _get_events
 
 
 TOKEN = os.environ.get("GITHUB_API_TOKEN", None)
-ISSUES_URI = "/repos/streamlit/streamlit/issues"
-LABELS_URI = "/repos/streamlit/streamlit/labels"
 ISSUES_PER_REQUEST = 100    # maximum allowed by GitHub API
 MAXPAGE = 5
 

@@ -3,7 +3,33 @@ from datetime import datetime
 
 class Event:
     def __init__(self, **kwargs):
-        self.__dict__ = kwargs
+        self.actor = kwargs.get("actor", None)
+        self.created_at = kwargs.get("created_at", None)
+        self.org = kwargs.get("org", None)
+        self.payload = kwargs.get("payload", None)
+        self.public = kwargs.get("public", False)
+        self.repo = kwargs.get("repo", None)
+        self.type = kwargs.get("type", None)
+
+        self._process_datetimes()
+
+    @property
+    def action(self):
+        return self.payload.get("action", None)
+
+    @property
+    def username(self):
+        return self.actor.get("login", None)
+
+    def _process_datetimes(self):
+        # '2020-07-23T05:47:47Z'
+        if self.created_at:
+            self.created_at = datetime.strptime(self.created_at, "%Y-%m-%dT%H:%M:%SZ")
+
+    def __str__(self):
+        return "[{e.actor.login}]: {e.payload}".format(e = self)
+
+
 
 
 class Label:
