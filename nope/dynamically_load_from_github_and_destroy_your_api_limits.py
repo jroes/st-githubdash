@@ -69,6 +69,22 @@ class SimpleIssue:
             "closed_by": self.closed_by,
         }
 
+    def to_json(self):
+        return json.dumps({
+            "title": self.title,
+            "url": self.url,
+            "number": self.number,
+            "labels": self.get_labels(),
+            "creator": self.get_creator(),
+            "state": self.state,
+            "assigned": self.assignee,
+            "num_comments": self.comments,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at),
+            "closed_at": self.closed_at,
+            "closed_by": self.closed_by,
+        })
+
 
 
 }

@@ -1,83 +1,71 @@
-import time
-import os
-
 import streamlit as st
-import pandas as pd 
+import pandas as pd
+from github import Github
 
-from octohub.connection import Connection
-
-from githubdashlib import Label, Issue 
-from githubdashlib import get_labels as _get_labels
-from githubdashlib import get_issues as _get_issues
-from githubdashlib import get_all_events as _get_events
+from datetime import datetime
 
 
-TOKEN = os.environ.get("GITHUB_API_TOKEN", None)
-ISSUES_PER_REQUEST = 100    # maximum allowed by GitHub API
-MAXPAGE = 5
+def initialize(reponame):
+    # This GitHub token provides read-only access to public information.
+    # We just need it to expand our API query rate.
+    gh = Github("d15cbe887b2fde45ea9a057d6c0e2c37c5d8449a")
+    return gh.get_repo(reponame)
 
 
-@st.cache
-def get_connection():
-    return Connection(TOKEN)
+@st.cache(suppress_st_warning=True)
+def get_all_issues_and_PRs(reponame="streamlit/streamlit"):
+    st.write("Downloading issues from %s" % reponame)
+    st.write("(This will take 1-2 minutes, hang tight.)")
+    repo = initialize(reponame)
+    everything = repo.get_issues(state="all")
 
-CONN = get_connection()
+    issues = []
+    prs = []
 
-@st.cache(allow_output_mutation=True)
-def get_labels():
-    return _get_labels(CONN, per_page=100)
+    for issue in everything:
+        if issue.pull_request:
+            prs.append(issue)
+        else:
+            issues.append(issue)
 
+    return (issues, prs)
 
-def get_issues(params, per_page=30, page=1):
-    return _get_issues(CONN, params, per_page=per_page, page=page)
-
-
-# -- SETUP --
-
-_all_labels = get_labels()
-
-ALL_LABELS = {}
-for label in _all_labels:
-    ALL_LABELS[label.name] = label 
+def get_date(github_datetime):
+    return datetime.strptime(github_datetime, "%Y-%m-%dT%H:%M:%SZ")
 
 
-# -- SIDEBAR -- 
-state = st.sidebar.radio("Issue state", ("open", "closed"))
-st.sidebar.header("Filter by Labels")
+ALL_ISSUES, ALL_PRS = get_all_issues_and_PRs()
 
-label_checkboxes = dict(zip(ALL_LABELS.keys(), [False] * len(ALL_LABELS))) 
+class SimpleIssue:
+    def __init__(**kwargs):
+        self.__dict__ = kwargs
 
-for name in ALL_LABELS.keys():
-    try:
-        label_checkboxes[name] = st.sidebar.checkbox(label=name)
-    except TypeError:
-        pass
+    def get_labels(self):
+        
 
-selected_labels = [name for name in label_checkboxes.keys() if label_checkboxes[name]]
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "url": self.url,
+            "number": self.number,
+            "labels": self.get_labels(),
+            "username": self.get_username(),
+            "state": self.state,
+            "assigned": self.assignee,
+            "num_comments": self.comments,
+            "created_at": self.get_date(self.created_at),
+            "updated_at": self.get_date(self.updated_at),
+            "closed_at": self.get_date(self.closed_at),
+            "closed_by": self.closed_by,
+        }
 
 
-# -- ISSUE LIST --
-issues_per_page = st.slider(label="Issues per page", min_value=20,
-                                max_value=100)
-current_page = st.number_input(label="Page", min_value=1)
 
-params = {"state": state,
-          "labels": ",".join(selected_labels)}
-issues = get_issues(params, per_page=issues_per_page, page=current_page)
+}
+pr_dict = {}
 
-if selected_labels:
-    label_str = " ".join([ALL_LABELS[label].html_name for label in selected_labels])
-    st.write("%s (%i issues)" % (label_str, len(issues)), unsafe_allow_html=True)
-else:
-    st.header("All (%i issues)" % len(issues))
 
-for issue in issues:
-    issue_line = "<a href='{i.html_url}'>{i}</a>".format(i=issue)
-    for label in issue.labels.values():
-        if label.name not in selected_labels:
-            issue_line += " " + label.html_name
-    st.write(issue_line, unsafe_allow_html=True)
-    if issue.closed_at:
-        st.write("Time to close: %r" % issue.time_to_close)
+st.write("Total issues: %i" % len(ALL_ISSUES))
+st.write("Total PRs: %i" % len(ALL_PRS))
 
 
