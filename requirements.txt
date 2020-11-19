@@ -1,3 +1,6 @@
-streamlit
+streamlit-nightly
 simplejson
 pytz
+PyGithub
+ipython
+boto3
