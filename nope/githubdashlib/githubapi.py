@@ -1,9 +1,12 @@
+## THIS API RELIES ON THE octohub GitHub interaction library.
+
 from .githubobjects import Label, Issue, Event
 
 ISSUES_URI = "/repos/streamlit/streamlit/issues"
 LABELS_URI = "/repos/streamlit/streamlit/labels"
 EVENTS_URI = "/repos/streamlit/streamlit/events"
 
+DEFAULT_PER_PAGE = 30
 
 def get_all_events(conn):
     events = []
@@ -25,7 +28,7 @@ def get_labels(conn, per_page=30):
 
 
 def get_issues(conn, params=None, direction=None, since=None, 
-                     sort=None, per_page=30, page=1):
+                     sort=None, per_page=DEFAULT_PER_PAGE, page=1):
     issues = []
     uri = ISSUES_URI + "?per_page=%i" % per_page
     if since:

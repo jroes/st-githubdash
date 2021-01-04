@@ -5,13 +5,6 @@ from github import Github
 from datetime import datetime
 
 
-def initialize(reponame):
-    # This GitHub token provides read-only access to public information.
-    # We just need it to expand our API query rate.
-    gh = Github("d15cbe887b2fde45ea9a057d6c0e2c37c5d8449a")
-    return gh.get_repo(reponame)
-
-
 @st.cache(suppress_st_warning=True)
 def get_all_issues_and_PRs(reponame="streamlit/streamlit"):
     st.write("Downloading issues from %s" % reponame)

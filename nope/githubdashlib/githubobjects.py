@@ -115,10 +115,8 @@ class Issue:
         return "<Issue #{i.number}: {i.title}>".format(i = self)
 
 
-
-
     ### @@@
-    def self._load_comments(self):
+    def _load_comments(self):
         print("GET /repos/:owner/:repo/issues/comments")
 
     @property

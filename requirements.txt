@@ -1,4 +1,4 @@
-streamlit-nightly
+streamlit
 simplejson
 pytz
 PyGithub

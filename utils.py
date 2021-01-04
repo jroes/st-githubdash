@@ -47,8 +47,6 @@ class SimpleIssue:
             "created_at": self.created_at,
             "updated_at": self.updated_at),
             "closed_at": self.closed_at,
-            "closed_by": self.closed_by,
-        })
-
+            "closed_by": self.closed_by,      })
 
 
