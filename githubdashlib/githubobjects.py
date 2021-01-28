@@ -34,9 +34,8 @@ def _get_username(ghapi_user):
     return ghapi_user.login
 
 
-
 class SimpleIssue:
-    def __init__(ghapi_issue):
+    def __init__(self, ghapi_issue):
         self.url = ghapi_issue.url
         self.title = ghapi_issue.title
         self.number = ghapi_issue.number

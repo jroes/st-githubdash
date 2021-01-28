@@ -1,61 +1,22 @@
 import streamlit as st
 import pandas as pd
-from github import Github
-
-from datetime import datetime
 
 
-@st.cache(suppress_st_warning=True)
-def get_all_issues_and_PRs(reponame="streamlit/streamlit"):
-    st.write("Downloading issues from %s" % reponame)
-    st.write("(This will take 1-2 minutes, hang tight.)")
-    repo = initialize(reponame)
-    everything = repo.get_issues(state="all")
+from githubdashlib import get_all_issues_and_PRs, get_connection
 
-    issues = []
-    prs = []
-
-    for issue in everything:
-        if issue.pull_request:
-            prs.append(issue)
-        else:
-            issues.append(issue)
-
-    return (issues, prs)
-
-def get_date(github_datetime):
-    return datetime.strptime(github_datetime, "%Y-%m-%dT%H:%M:%SZ")
+@st.cache
+def get_everything():
+    conn = get_connection("streamlit/streamlit")
+    return get_all_issues_and_PRs(conn)
 
 
-ALL_ISSUES, ALL_PRS = get_all_issues_and_PRs()
-
-class SimpleIssue:
-    def __init__(**kwargs):
-        self.__dict__ = kwargs
-
-    def get_labels(self):
-        
-
-    def to_dict(self):
-        return {
-            "title": self.title,
-            "url": self.url,
-            "number": self.number,
-            "labels": self.get_labels(),
-            "username": self.get_username(),
-            "state": self.state,
-            "assigned": self.assignee,
-            "num_comments": self.comments,
-            "created_at": self.get_date(self.created_at),
-            "updated_at": self.get_date(self.updated_at),
-            "closed_at": self.get_date(self.closed_at),
-            "closed_by": self.closed_by,
-        }
+#ALL_ISSUES, ALL_PRS = get_everything()
 
 
+ALL_ISSUES = []
+ALL_PRS = []
 
-}
-pr_dict = {}
+
 
 
 st.write("Total issues: %i" % len(ALL_ISSUES))

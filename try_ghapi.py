@@ -3,13 +3,34 @@ import os
 
 
 api = GhApi(owner="streamlit", repo="streamlit", token=os.environ["GITHUB_API_KEY"])
+ 
+params = {
+    'state': 'open',
+    'labels': ['media'],
+    'per_page': 100,
+    }
 
 issues = api.issues.list(state="open")
+
+
+# issues.list_labels_for_repo
+# issues.list_events
+# issues.get(owner, repo, issue_number): Get an issue
+# issues.list_comments_for_repo(owner, repo, sort, direction, since, per_page, page): List issue comments for a repository
+# issues.list_for_repo(owner, repo, milestone, state, assignee, creator, mentioned, labels, sort, direction, since, per_page, page): List repository issues
+
+
 print(api.limit_rem)
+issues = api.issues.list_for_repo(
+            state=params['state'],
+            labels=params['labels'],
+            per_page=params['per_page'],
+        )
 
 
 
 
+# https://ghapi.fast.ai/fullapi.html#issues
 
 
 # for posterity -- the following took me about 25 minutes to figure out...

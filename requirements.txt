@@ -1,6 +1,6 @@
 streamlit
 simplejson
 pytz
-PyGithub
 ipython
 boto3
+ghapi
