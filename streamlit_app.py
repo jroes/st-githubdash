@@ -43,7 +43,7 @@ st.header("GitHub analytics dashboard")
 
 repo_name = st.text_input("Repository name", "streamlit/streamlit")
 since = st.date_input("Issues since", value=date.today() + relativedelta(months=-3))
-#issue_count = st.number_input("Number of issues to analyze", value=200)
+st.markdown("*Note: Only the first 350 issues are downloaded, as collecting the data takes time and can run against GitHub rate limits.*")
 
 issues = get_issues(repo_name, since)
 
