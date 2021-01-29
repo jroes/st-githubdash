@@ -1,6 +1,2 @@
 streamlit
-simplejson
-pytz
-ipython
-boto3
-ghapi
+PyGithub
