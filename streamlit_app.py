@@ -30,6 +30,8 @@ def format_issue(issue):
 
     return formatted_issue
 
+st.header("GitHub analytics dashboard")
+
 repo_name = st.text_input("Repository name", "streamlit/streamlit")
 issue_count = st.number_input("Number of issues to analyze", value=200)
 
